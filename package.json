@@ -1,0 +1,27 @@
+{
+  "name": "ozon-test",
+  "version": "1.0.0",
+  "description": "прогресс-бар в виде круга",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "doc": "jsdoc -c ./jsdoc.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sof7ik/progress-bar.git"
+  },
+  "keywords": [
+    "progress",
+    "ozon"
+  ],
+  "author": "Leonid Bychkov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sof7ik/progress-bar/issues"
+  },
+  "homepage": "https://github.com/Sof7ik/progress-bar#readme",
+  "devDependencies": {
+    "jsdoc": "^4.0.3"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "source": {
+    "include": [
+      "./app.js"
+    ]
+  },
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc", "closure"]
+  },
+  "opts": {
+    "destination": "./docs/",
+    "readme": "./README.md"
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  }
+}

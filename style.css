@@ -1,0 +1,235 @@
+:root {
+    --progress-blue-color: #005DFF;
+    --progress-bg-color: #EEF3F6;
+    --progress-thickenss: 10px;
+
+    --checkbox-bg-color: #DFE6F0;
+    --checkbox-thumb-color: #fff;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+html {
+    font-size: 62.5%;
+    font-family: sans-serif;
+}
+
+body {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+header, main, footer {
+    width: 100%;
+}
+
+main {
+    flex-grow: 1;
+}
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+}
+
+header {
+    padding: 20px 0;
+}
+
+a {
+    text-decoration: none;
+    font-size: 1.8rem;
+    color: #000;
+    font-weight: 600;
+
+    transition: color .3s;
+}
+@media screen and (hover: hover) {
+    a:hover {
+        color: var(--progress-blue-color);
+    }
+}
+@media screen and (hover: none) {
+    a {
+        position: relative;
+        color: var(--progress-blue-color);
+    }
+}
+
+label {
+    font-size: 2rem;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+
+    width: 100%;
+    max-width: 40px;
+    border-radius: 50px;
+    border: 1px solid #000;
+    outline: none;
+
+    font-size: 1.5rem;
+    color: #000;
+    text-align: center;
+    padding: 3px 7px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+input[type="checkbox"] + label {
+    position: relative;
+    padding-left: 55px;
+}
+input[type="checkbox"] + label::before {
+    content: "";
+    width: 40px;
+    border-radius: 15px;
+    height: 22px;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+    background-color: var(--checkbox-bg-color);
+}
+input[type="checkbox"] + label::after {
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) translateX(2px);
+
+    background-color: var(--checkbox-thumb-color);
+
+    transition: transform .3s, background-color .3s;
+}
+input[type="checkbox"]:checked + label::after {
+    transform: translateY(-50%) translateX(20px);
+    background-color: var(--progress-blue-color);
+}
+input[type="checkbox"]:disabled + label::after {
+    background-color: #ccc;
+}
+
+.page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.progress-wrapper {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+
+    gap: 70px;
+
+    padding: 0 30px;
+}
+
+#progress {
+    min-width: 100px;
+    min-height: 100px;
+}
+
+#progress-circle {
+    transform: rotate(-90deg);
+    display: block;
+
+    /*animation: animateLoader 1.6s ease-in-out .3s infinite;*/
+    animation: animateLoader 1.6s cubic-bezier(.38,.56,.91,.39) .3s infinite;
+    animation-play-state: paused;
+
+    transition: opacity .3s;
+}
+
+#progress-circle.animated {
+    animation-play-state: running;
+}
+@keyframes animateLoader {
+    0% {
+        transform: rotate(-90deg);
+    }
+    100% {
+        transform: rotate(270deg);
+    }
+}
+
+#progress-circle.hidden {
+    /* visually hidden */
+
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    white-space: nowrap;
+    clip-path: inset(100%);
+    clip: rect(0 0 0 0);
+    overflow: hidden;
+
+    opacity: 0;
+}
+
+#progress-percent,
+#progress-bg {
+    stroke-width: var(--progress-thickenss);
+    fill: none;
+}
+
+#progress-bg {
+    stroke: var(--progress-bg-color);
+}
+#progress-percent {
+    stroke: var(--progress-blue-color);
+}
+
+.progress-controls {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    gap: 20px;
+}
+
+.progress-controls__input-wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+
+    gap: 15px;
+}
