@@ -75,7 +75,21 @@ class Progress {
      * @type {number}
      * @private
      */
-    _radius = 0;
+    _radius = 45;
+
+    /**
+     * Толщина круга
+     * @type {number}
+     * @private
+     */
+    _thickness = 10;
+
+    /**
+     * Процент выполнения (заливки)
+     * @type {number}
+     * @private
+     */
+    _value = 75;
 
     /**
      * @param {SVGElement} selector - Ссылка на SVG-элемент
@@ -83,25 +97,15 @@ class Progress {
      * @param {Number} options.value - значение прогресса
      * @param {Boolean} options.animated - включать сразу анимацию вращения?
      * @param {Boolean} options.hidden - скрыть элемент по умолчанию?
+     * @param {Number} options.radius - радиус круга
+     * @param {Number} options.thickness - толщина круга
+     * @param {SVGCircleElement | string} options.circlePercent - ссылка на DOM-элемент или ID элемента, отображающий процент выполнения
+     * @param {SVGCircleElement | string} options.circleBackground - ссылка на DOM-элемент или ID элемента, отображающий дугу прогресса
      */
     constructor(selector, options = {}) {
-        // init start values
-        this._value = options.value ?? 75;
-        this.isAnimated = options.hidden ?? false;
-        this.isHidden = options.animated ?? false;
-
         this.element = selector;
 
-        this._circlePercent = selector.querySelector('#progress-percent');
-        this._circleBackground = selector.querySelector('#progress-bg');
-
-        // calculate default values
-        this._radius = Number(this._circlePercent.getAttribute("r"));
-        this._totalLength = Math.ceil(2 * Math.PI * this._radius);
-
-        // render default state
-        this._circlePercent.style.strokeDasharray = `${this._totalLength}px`;
-        this.#changeRenderedValue();
+        this._init(options);
     }
 
     /**
@@ -134,7 +138,7 @@ class Progress {
         }
 
         this._value = value;
-        this.#changeRenderedValue();
+        this._changeRenderedValue();
     }
 
     get value() {
@@ -142,12 +146,147 @@ class Progress {
     }
 
     /**
+     * Получить текущий радиус круга прогресса
+     * @returns {number}
+     */
+    get radius() {
+        return this._radius;
+    }
+
+    /**
+     * Установить новый радиус круга прогресса
+     * @param {Number} value
+     */
+    set radius(value) {
+        if (value &lt; 0) {
+            throw new Error("Радиус должен быть больше 0");
+        }
+
+        this._radius = value;
+        this._resize();
+    }
+
+    /**
+     * Получить текущую толщину круга
+     * @returns {number}
+     */
+    get thickness() {
+        return this._thickness;
+    }
+
+    /**
+     * Установить новую толщину круга прогресса
+     * @param {Number} value
+     */
+    set thickness(value) {
+        if (value &lt; 0) {
+            throw new Error("Толщина должна быть больше 0");
+        }
+
+        this._thickness = value;
+        this._circlePercent.setAttribute("stroke-width", `${this.thickness}`);
+        this._circleBackground.setAttribute("stroke-width", `${this.thickness}`);
+
+        this._resize();
+    }
+
+    get totalLength() {
+        return this._totalLength;
+    }
+
+    set totalLength(value) {
+        if (value &lt; 0) throw new Error("Длина должна быть больше 0");
+
+        this._totalLength = Math.ceil(value);
+    }
+
+    /**
+     *
+     * @param {object} options
+     * @private
+     */
+    _init(options) {
+        // init start values
+        this._radius = this._validateForNumber(this.radius, "радиус", options.radius);
+        this._thickness = this._validateForNumber(this.thickness, "толщина", options.thickness);
+        this._value = this._validateForNumber(this.value, "процент выполнения", options.value);
+
+        this._circlePercent = this._getElementBySelectorOrElement(options.circlePercent) ??
+            this.element.querySelector('#progress-percent');
+
+        this._circleBackground = this._getElementBySelectorOrElement(options.circleBackground) ??
+            this.element.querySelector('#progress-bg');
+
+        if (!this._circlePercent) {
+            throw new Error("Ошибка при инициализации дуги прогресса");
+        }
+        if (!this._circleBackground) {
+            throw new Error("Ошибка при инициализации дуги прогресса");
+        }
+
+        this.isAnimated = options.animated ?? false;
+        this.isHidden = options.hidden ?? false;
+
+        this._circlePercent.setAttribute("stroke-width", `${this.thickness}`);
+        this._circleBackground.setAttribute("stroke-width", `${this.thickness}`);
+
+        this._resize();
+
+        if (this.isHidden) {
+            this.hide();
+        }
+
+        if (!this.isHidden &amp;&amp; this.isAnimated) {
+            this.animate();
+        }
+
+        if (this.isAnimated &amp;&amp; this.isHidden) {
+            throw new Error("Блок не может быть скрытым и анимированным одновременно");
+        }
+    }
+
+    /**
+     * Проверяет, является ли переданное значение числом и возвращает его, иначе возвращает значение по умолчанию
+     * @param {Number} defaultValue - значение по умолчанию
+     * @param {String} paramName - название переменной. используется при отображении ошибки
+     * @param value - значение, которое нужно проверить
+     * @private
+     */
+    _validateForNumber(defaultValue, paramName, value = null) {
+        if (value) {
+            if (typeof value !== "number") {
+                throw new Error(`${paramName} должен быть числом`)
+            }
+            return value;
+        }
+        else {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Возвращает элемент по его селектору или сам элемент
+     * @param {HTMLElement | string} value
+     * @returns {HTMLElement|null}
+     * @private
+     */
+    _getElementBySelectorOrElement(value) {
+        if (typeof value === "string") {
+            return document.getElementById(value);
+        }
+        else if (value instanceof SVGCircleElement) {
+            return value;
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
      * Запуск анимации вращения
      * @returns void
      */
     animate() {
-        if (this.isAnimated) return;
-
         this.isAnimated = true;
         this.element.classList.add('animated');
     }
@@ -168,8 +307,6 @@ class Progress {
      * @returns void
      */
     hide() {
-        if (this.isHidden) return;
-
         this.isHidden = true;
         this.element.classList.add("hidden");
     }
@@ -190,16 +327,39 @@ class Progress {
      * @private
      * @returns void
      */
-    #changeRenderedValue() {
+    _changeRenderedValue() {
         // 100% = 2 * Math.PI * radius
         // при value = 25 нужно оставить 75% от длины
         // при value = 50 нужно оставить 50% от длины
         // при value = 75 нужно оставить 25% от длины
 
         // ищем % от длины дуги
-        const percentageLength = Math.ceil(this._totalLength / 100 * this._value);
-        this._loadedLength = this._totalLength - percentageLength;
+        const percentageLength = Math.ceil(this.totalLength / 100 * this._value);
+        this._loadedLength = this.totalLength - percentageLength;
         this._circlePercent.style.strokeDashoffset = `${this._loadedLength}px`;
+        this._circlePercent.style.strokeDasharray = `${this.totalLength}px`;
+    }
+
+    /**
+     * Изменение радиуса прогресса
+     * @private
+     */
+    _resize() {
+        this.totalLength = (2 * Math.PI * this.radius);
+
+        this._circlePercent.setAttribute("r", `${this._radius}`);
+        this._circlePercent.setAttribute("cx", `${this._radius + this.thickness / 2}`);
+        this._circlePercent.setAttribute("cy", `${this._radius + this.thickness / 2}`);
+
+        this._circleBackground.setAttribute("r", `${this._radius}`);
+        this._circleBackground.setAttribute("cx", `${this._radius + this.thickness / 2}`);
+        this._circleBackground.setAttribute("cy", `${this._radius + this.thickness / 2}`);
+
+        this.element.setAttribute("width", `${(this._radius * 2) + this.thickness}`);
+        this.element.setAttribute("height", `${(this._radius * 2) + this.thickness}`);
+
+        // считаем новые длины
+        this._changeRenderedValue();
     }
 }
 
@@ -263,13 +423,12 @@ document.addEventListener("DOMContentLoaded", () => {
     valueInput.addEventListener('change', onInputValueChange);
 
 
-    window.progressComponent = new Progress(progressSvg);
+    window.progressComponent = new Progress(progressSvg, {
+        radius: 120,
+    });
 
     valueInput.value = progressComponent.value;
-})
-
-
-</code></pre>
+})</code></pre>
         </article>
     </section>
 
@@ -285,7 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Mon Sep 30 2024 19:21:32 GMT+0300 (Москва, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Oct 01 2024 11:29:50 GMT+0300 (Москва, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
