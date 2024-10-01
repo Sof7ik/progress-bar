@@ -109,7 +109,7 @@ class Progress {
             throw new Error("Значение прогресса должно быть в диапазоне от 0 до 100 включительно");
         }
 
-        this._value = value;
+        this._value = this._validateForNumber(this._value, "процент выполнения", value);
         this._changeRenderedValue();
     }
 
@@ -134,7 +134,7 @@ class Progress {
             throw new Error("Радиус должен быть больше 0");
         }
 
-        this._radius = value;
+        this._radius = this._validateForNumber(this._radius, "радиус", value);
         this._resize();
     }
 
@@ -155,7 +155,8 @@ class Progress {
             throw new Error("Толщина должна быть больше 0");
         }
 
-        this._thickness = value;
+        this._thickness = this._validateForNumber(this.thickness, "толщина", value);
+
         this._circlePercent.setAttribute("stroke-width", `${this.thickness}`);
         this._circleBackground.setAttribute("stroke-width", `${this.thickness}`);
 
@@ -164,12 +165,6 @@ class Progress {
 
     get totalLength() {
         return this._totalLength;
-    }
-
-    set totalLength(value) {
-        if (value < 0) throw new Error("Длина должна быть больше 0");
-
-        this._totalLength = Math.ceil(value);
     }
 
     /**
@@ -317,7 +312,7 @@ class Progress {
      * @private
      */
     _resize() {
-        this.totalLength = (2 * Math.PI * this.radius);
+        this._totalLength = (2 * Math.PI * this.radius);
 
         this._circlePercent.setAttribute("r", `${this._radius}`);
         this._circlePercent.setAttribute("cx", `${this._radius + this.thickness / 2}`);
