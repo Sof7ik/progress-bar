@@ -212,6 +212,7 @@ input[type="checkbox"]:disabled + label::after {
 }
 #progress-percent {
     stroke: var(--progress-blue-color);
+    transition: stroke-dashoffset .3s;
 }
 
 .progress-controls {
