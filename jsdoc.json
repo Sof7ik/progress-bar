@@ -1,7 +1,7 @@
 {
   "source": {
     "include": [
-      "./app.js"
+      "./app.js", "./Progress.js"
     ]
   },
   "tags": {
