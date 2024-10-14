@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "doc": "jsdoc -c ./jsdoc.json"
+    "doc": "jsdoc -c ./jsdoc.json",
+    "bundle": "tsc --build"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/Sof7ik/progress-bar#readme",
   "devDependencies": {
-    "jsdoc": "^4.0.3"
+    "jsdoc": "^4.0.3",
+    "typescript": "^5.6.3"
   }
 }
