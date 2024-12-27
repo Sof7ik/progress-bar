@@ -159,12 +159,13 @@ class Progress {
     private init(options: initObject): void {
         // init start values
         this._radius = this.validateForNumber(this._radius, options.radius);
+        this._circlePercent = options.circlePercent ?? this._element.querySelector('#progress-percent');
+        this._circleBackground = options.circleBackground ?? this._element.querySelector('#progress-bg');
+
+        console.log("this._circlePercent", this._circlePercent);
+
         this.thickness = this.validateForNumber(this._thickness, options.thickness);
         this.value = this.validateForNumber(this.value, options.value);
-
-        this._circlePercent = options.circlePercent ?? this._element.querySelector('#progress-percent');
-
-        this._circleBackground = options.circleBackground ?? this._element.querySelector('#progress-bg');
 
         if (!this._circlePercent) {
             throw new Error("Ошибка при инициализации дуги прогресса");

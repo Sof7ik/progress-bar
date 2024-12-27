@@ -4,7 +4,6 @@
   "description": "прогресс-бар в виде круга",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "doc": "jsdoc -c ./jsdoc.json",
     "bundle": "tsc --build"
   },

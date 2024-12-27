@@ -130,10 +130,11 @@ class Progress {
         var _a, _b, _c, _d;
         // init start values
         this._radius = this.validateForNumber(this._radius, options.radius);
-        this.thickness = this.validateForNumber(this._thickness, options.thickness);
-        this.value = this.validateForNumber(this.value, options.value);
         this._circlePercent = (_a = options.circlePercent) !== null && _a !== void 0 ? _a : this._element.querySelector('#progress-percent');
         this._circleBackground = (_b = options.circleBackground) !== null && _b !== void 0 ? _b : this._element.querySelector('#progress-bg');
+        console.log("this._circlePercent", this._circlePercent);
+        this.thickness = this.validateForNumber(this._thickness, options.thickness);
+        this.value = this.validateForNumber(this.value, options.value);
         if (!this._circlePercent) {
             throw new Error("Ошибка при инициализации дуги прогресса");
         }
